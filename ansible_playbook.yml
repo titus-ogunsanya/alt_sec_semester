@@ -1,0 +1,28 @@
+---
+- name: Copy script from master to slave, execute it, then copy a file from slave to master
+  hosts: 192.168.56.18
+  become: true
+  tasks:
+    - name: Copy script from master to slave
+      copy:
+        src: /home/vagrant/Alt_ass/alt_sec_semester
+        dest: /home/vagrant/titus
+        mode: 0755
+
+    - name: Execute script on slave
+      command: /home/vagrant/titus/script.sh
+
+
+    - name: Create server uptime log file
+      file:
+        path: /home/vagrant/titus/server_uptime.log
+        state: touch
+
+    
+      
+    - name: Add cron job to check server uptime
+      cron:
+        name: "Check server uptime"
+        minute: 0
+        hour: 0
+        job: "uptime >> /home/vagrant/titus/server_uptime.log"
